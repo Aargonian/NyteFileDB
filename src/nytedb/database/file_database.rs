@@ -32,14 +32,8 @@ pub enum FileDatabaseError {
 /*   CREATION                                                                 */
 /******************************************************************************/
 
-pub fn create_database(path: &Path) -> Result<FileDatabase, FileDatabaseError> {
-    Ok(FileDatabase {
-        path: path.to_owned(),
-    })
-}
-
-pub fn open_database(
-    read_only: bool,
+pub fn find_database(
+    _read_only: bool,
     create: bool,
     search_path: Option<&Path>,
 ) -> Result<FileDatabase, FileDatabaseError> {
@@ -56,6 +50,13 @@ pub fn open_database(
     };
 
     Ok(FileDatabase { path })
+}
+
+#[allow(clippy::unnecessary_wraps)]
+fn create_database(path: &Path) -> Result<FileDatabase, FileDatabaseError> {
+    Ok(FileDatabase {
+        path: path.to_owned(),
+    })
 }
 
 fn attempt_locate_db(search_path: Option<&Path>) -> Option<PathBuf> {
@@ -84,7 +85,7 @@ fn attempt_locate_db_in_app_data_directory() -> Option<PathBuf> {
 }
 
 fn attempt_locate_db_in_cwd() -> Option<PathBuf> {
-    let cwd = std::env::current_dir().ok()?;
+    let cwd = env::current_dir().ok()?;
     attempt_locate_db_at_path(&cwd)
 }
 

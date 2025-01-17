@@ -1,17 +1,18 @@
 #![allow(dead_code)]
-
 // NOTE: Look into clap_mangen for man page generation
 // NOTE: Look into assert_cmd and assert_fs for testing
 
-pub mod constants;
-pub mod file_database;
+// Expose everything from common
+mod common;
+pub use common::*;
 
-use core::unimplemented;
+pub mod database;
 
-use crate::file_database::open_database;
 use clap::{Parser, Subcommand};
-use tracing::{debug, info, Level};
+use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
+
+use crate::database::find_database;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -32,7 +33,6 @@ enum Commands {
     Standalone { path: String },
 }
 
-#[allow(clippy::missing_const_for_fn)]
 fn main() {
     let subscriber = FmtSubscriber::builder()
         .with_max_level(Level::TRACE)
@@ -50,7 +50,7 @@ fn main() {
     let path = None;
 
     // TODO: Open Existing Database
-    let _database = open_database(false, true, path);
+    let _database = find_database(false, true, path);
 
     // TODO: Verify Database
 
