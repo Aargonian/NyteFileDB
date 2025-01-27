@@ -26,7 +26,7 @@ path = "src/nytedb/main.rs"
 # Make the all group denied
 all = { level = "deny", priority = -1 }
 
-# Ignored pedantic warnings
+# Ignored some pedantic warnings
 must_use_candidate = { level = "allow", priority = 1 }
 module_name_repetitions = { level = "allow", priority = 1 }
 missing_errors_doc = { level = "allow", priority = 1 }
