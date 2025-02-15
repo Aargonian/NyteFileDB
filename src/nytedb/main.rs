@@ -4,12 +4,14 @@
 
 // Expose everything from common
 mod common;
+use std::path::PathBuf;
+
 pub use common::*;
 
 pub mod database;
 
 use clap::{Parser, Subcommand};
-use tracing::{info, Level};
+use tracing::{error, info, Level};
 use tracing_subscriber::FmtSubscriber;
 
 use crate::database::find_database;
@@ -18,8 +20,10 @@ use crate::database::find_database;
 #[command(version, about, long_about = None)]
 #[command(propagate_version = true)]
 struct Args {
-    #[command(subcommand)]
-    command: Commands,
+    // #[command(subcommand)]
+    // command: Option<Commands>,
+
+    path: PathBuf,
 }
 
 #[derive(Subcommand)]
@@ -33,7 +37,7 @@ enum Commands {
     Standalone { path: String },
 }
 
-fn main() {
+fn main() -> Result<(), isize> {
     let subscriber = FmtSubscriber::builder()
         .with_max_level(Level::TRACE)
         .finish();
@@ -44,15 +48,19 @@ fn main() {
     info!("Beginning NyteFDB Initialization");
 
     // Initialize Clap
-    let _args = Args::parse();
+    let args = Args::parse();
 
     // TODO: Parse Command Line Arguments
-    let path = None;
+    let path = args.path;
+    if !path.exists() {
+        error!("The provided path does not exist: {:?}", path);
+        return Err(-1);
+    }
 
     // TODO: Open Existing Database
-    let _database = find_database(false, true, path);
+    let _database = find_database(false, true, Some(&path));
 
-    // TODO: Verify Database
+    /* TODO: Verify Database
 
     // info!("NyteFDB Initialization Complete");
     //
@@ -127,4 +135,6 @@ fn main() {
     //         // at the passed directory.
     //     _ => unimplemented!(),
     // }
+    */
+    Ok(())
 }
